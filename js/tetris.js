@@ -15,6 +15,8 @@
 	* Playfield.
 */
 var cellSize;
+var maxCellSize = 52;
+var minCellSize = 32;
 var column;
 
 /**
@@ -325,15 +327,10 @@ var flags = {
 	rotLeft: 64,
 	rot180: 128,
 };
-var spriteImages = ["img/block0.png", "img/block1.png", "img/block2.png", "img/block3.png", "img/block4.png", "img/block5.png", "img/block6.png", "img/block7.png"];
+var spriteImages;
 var pattern = [];
 var imgObj = [];
 var imageReady = [];
-for(var i = 0; i< spriteImages.length; i++){
-	imgObj[i] = new Image();
-	imgObj[i].src = spriteImages[i];
-	imageReady[i] = false;
-}
 
 
 function resize() {
@@ -349,17 +346,35 @@ function resize() {
 	// Aspect ratio: 1.024
 	var screenHeight = window.innerHeight - 34;
 	var screenWidth = ~~(screenHeight * 1.024);
+	console.log("screen Width: " + screenWidth);
 	if (screenWidth > window.innerWidth)
-    screenHeight = ~~(window.innerWidth / 1.024);
+	screenHeight = ~~(window.innerWidth / 1.024);
 	
 	if (settings.Size === 1 && screenHeight > 602) cellSize = 15;
 	else if (settings.Size === 2 && screenHeight > 602) cellSize = 30;
 	else if (settings.Size === 3 && screenHeight > 902) cellSize = 45;
 	//STAS CHANGED, INITIALLY WAS (screenHeight / 20)
-	else cellSize = Math.max(~~(screenHeight / 22), 10);
+	else cellSize = Math.max(~~(screenHeight / 18), 10);
 	
-	cellSize = 45;
-	console.log("cell Size is: " + cellSize);
+	if(cellSize > maxCellSize)
+		cellSize = maxCellSize;
+	else if(cellSize < minCellSize)
+		cellSize = minCellSize;
+	
+	console.log("initial cell Size is: " + cellSize);
+	cellSize -= cellSize%4;
+	console.log("adapted cell Size is: " + cellSize);
+	
+	
+	spriteImages = ["block1.png", "block1.png", "block2.png", "block3.png", "block4.png", "block5.png", "block6.png", "block7.png"];
+	for(var i = 0; i< spriteImages.length; i++){
+		spriteImages[i] = "img/"+cellSize+"/"+ spriteImages[i];
+		console.log("image " + i + " is " + spriteImages[i]);
+		imgObj[i] = new Image();
+		imgObj[i].src = spriteImages[i];
+		imageReady[i] = false;
+	}
+	
 	
 	var pad = (window.innerHeight - (cellSize * 20 + 2)) / 4 + 'px';
 	var contentPad = (window.innerHeight - (cellSize * 20 + 2)) / 8 + 'px + 0px';
